@@ -79,9 +79,9 @@ class Path:
     start : the start position of the path
     end : the end position of the path
     path : the collection of splines that define the path
-    
+
     """
-    
+
     def __init__(self, start, goal, speed):
         self.start = start
         self.end = goal
@@ -120,7 +120,7 @@ class Path:
         for i, spline in enumerate(self.path):
             print(i+1, '. ', end='')
             spline.print()
-
+    
     def mutate(self, start):
         segments = random.randint(1, 10)
         for i, spline in enumerate(self.path):
@@ -133,7 +133,6 @@ class Path:
         else:
             end = self.path[end_index].end_position
         partial_path = Path(start, end, self.path[0].speed)
-        partial_path.plot('red')
         self.path[start_index: end_index] = partial_path.path
 
     def crossover(self, other):
