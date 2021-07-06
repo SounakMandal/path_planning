@@ -82,7 +82,7 @@ def fuel_cost(path):
     length = 0
     for spline in path.path:
         length += spline.path_length
-    return length/4
+    return length
 
 
 def path_cost(path, obstacle_list):
