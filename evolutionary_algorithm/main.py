@@ -11,24 +11,35 @@ from path import *
 def plot_obstacles(obstacle_list, axis):
     for obstacle in obstacle_list:
         x, y = obstacle['position']
-        circle = mpatches.Circle((x, y), obstacle['delta_x'], fill=False)
+        circle = mpatches.Circle(
+            (x, y), obstacle['delta_x'], fill=False,
+            linestyle="dotted"
+        )
         axis.add_artist(circle)
         axis.scatter(x, y, color='black', s=5)
 
 
-def plot_path(path, axis, color='blue'):
+def plot_path(path, axis):
     for spline in path:
-        axis.plot(spline.x, spline.y, color)
+        axis.plot(spline.x, spline.y)
 
 
-def plot_all(axes, obstacle_list):
-    color = {0: 'red', 1: 'blue', 2: 'orange', 3: 'green'}
-    for col in range(2):
-        plot_obstacles(obstacle_list, axes[0, col])
+def plot_all(obstacle_list):
+    for i in range(2):
+        plot_obstacles(obstacle_list, axes1[0, i])
+        plot_obstacles(obstacle_list, axes2[0, i])
+    
     path_count = len(population)
     for i in range(path_count):
-        axis = axes[0, 0] if i < path_count // 2 else axes[0, 1]
-        plot_path(population[i].path, axis, color[i % 4])
+        if i < path_count//4:
+            axis = axes1[0, 0]
+        elif path_count//4 <= i < path_count//2:
+            axis = axes1[0, 1] 
+        elif path_count//2 <= i < (3*path_count) //4:
+            axis = axes2[0, 0]
+        else:
+            axis = axes2[0, 1]
+        plot_path(population[i].path, axis)
 
 
 obstacle_list = generate_list()
@@ -38,11 +49,13 @@ population = [Path(start, end, 5) for i in range(20)]
 
 while generation_count <= generations:
     print(f"Starting generation {generation_count}")
-    figure, axes = plt.subplots(1, 2, squeeze=False)
+    figure, axes1 = plt.subplots(1, 2, squeeze=False)
     figure.suptitle(f"Generation {generation_count}")
-    plot_all(axes, obstacle_list)
+    figure, axes2 = plt.subplots(1, 2, squeeze=False)
+    figure.suptitle(f"Generation {generation_count}")
+    plot_all(obstacle_list)
+    
     costs = []
-
     for path in population:
         cost = path_cost(path, obstacle_list)
         costs.append(cost)
@@ -75,7 +88,7 @@ while generation_count <= generations:
         copy2.extend([path1, path2])
     print("Crossed over paths : ", len(copy2))
     
-    population = population[:-6]
+    population = population[:-8]
     population.extend(copy1 + copy2)
     print("Population for next generation : ", len(population))
     generation_count += 1
